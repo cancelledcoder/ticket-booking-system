@@ -27,34 +27,36 @@ export default function Home() {
 
   const fetchSeats = async () => {
     try {
+      console.log('Fetching seats...');
       const response = await fetch('/api/seats');
-      if (!response.ok) throw new Error('Failed to fetch seats');
+      if (!response.ok) {
+        console.error('Failed to fetch seats:', response.status, response.statusText);
+        throw new Error('Failed to fetch seats');
+      }
       const data = await response.json();
+      console.log('Fetched seats:', data);
       setSeats(data);
     } catch (err) {
+      console.error('Error fetching seats:', err);
       setError('Failed to load seats. Please try again.');
     }
   };
 
   const handleSeatClick = (seatId: number) => {
-    setError(''); // Clear error when user interacts
+    setError('');
     if (seats.find(seat => seat.id === seatId)?.isBooked) {
-      return; // Seat is already booked
+      return;
     }
 
     setSelectedSeats(prev => {
       if (prev.includes(seatId)) {
-        const newSelected = prev.filter(id => id !== seatId);
-        setNumberOfSeats(newSelected.length.toString()); // Update number input
-        return newSelected;
+        return prev.filter(id => id !== seatId);
       }
       if (prev.length >= 7) {
         alert('You can only select up to 7 seats at a time');
         return prev;
       }
-      const newSelected = [...prev, seatId];
-      setNumberOfSeats(newSelected.length.toString()); // Update number input
-      return newSelected;
+      return [...prev, seatId];
     });
   };
 
@@ -208,12 +210,14 @@ export default function Home() {
     rows.push(rowSeats);
   }
 
+  console.log('Current seats state:', { seats, rows, selectedSeats });
+
   return (
     <main className="main">
       <div>
         <h1 className="title">Train Ticket Booking</h1>
         
-        <div style={{ display: 'flex', gap: '2rem' }}>
+        <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', marginTop: '2rem' }}>
           {/* Seat Grid */}
           <div className="seat-grid">
             <div className="grid">
@@ -224,7 +228,13 @@ export default function Home() {
                       key={seat.id}
                       onClick={() => handleSeatClick(seat.id)}
                       disabled={seat.isBooked}
-                      className={`seat ${seat.isBooked ? 'booked' : selectedSeats.includes(seat.id) ? 'selected' : 'available'}`}
+                      className={`seat ${
+                        seat.isBooked 
+                          ? 'booked' 
+                          : selectedSeats.includes(seat.id) 
+                            ? 'selected' 
+                            : 'available'
+                      }`}
                     >
                       {seat.id}
                     </button>
