@@ -302,36 +302,37 @@ export default function Home() {
                   color: 'white',
                   padding: '0.5rem',
                   borderRadius: '0.25rem',
+                  marginBottom: '0.5rem',
                 }}
               >
                 Book
               </button>
+              <button
+                onClick={handleReset}
+                style={{
+                  width: '100%',
+                  backgroundColor: '#3b82f6',
+                  color: 'white',
+                  padding: '0.5rem',
+                  borderRadius: '0.25rem',
+                  marginBottom: '0.5rem',
+                }}
+              >
+                Reset Booking
+              </button>
+              <button
+                onClick={handleResetAllSeats}
+                style={{
+                  width: '100%',
+                  backgroundColor: '#dc2626',
+                  color: 'white',
+                  padding: '0.5rem',
+                  borderRadius: '0.25rem',
+                }}
+              >
+                Reset All Seats
+              </button>
             </div>
-            <button
-              onClick={handleReset}
-              style={{
-                width: '100%',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                padding: '0.5rem',
-                borderRadius: '0.25rem',
-                marginBottom: '0.5rem',
-              }}
-            >
-              Reset Booking
-            </button>
-            <button
-              onClick={handleResetAllSeats}
-              style={{
-                width: '100%',
-                backgroundColor: '#dc2626',
-                color: 'white',
-                padding: '0.5rem',
-                borderRadius: '0.25rem',
-              }}
-            >
-              Reset All Seats
-            </button>
           </div>
         </div>
 
@@ -343,15 +344,7 @@ export default function Home() {
         )}
         {successMessage && (
           <div className="success">
-            <svg style={{ width: '1.5rem', height: '1.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
             {successMessage}
-            <button onClick={() => setSuccessMessage('')} style={{ marginLeft: '0.5rem' }}>
-              <svg style={{ width: '1rem', height: '1rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
           </div>
         )}
       </div>

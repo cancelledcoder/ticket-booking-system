@@ -93,12 +93,16 @@ body {
 }
 
 .seat-grid {
-  display: grid;
-  gap: 0.5rem;
   background: white;
   border-radius: 0.5rem;
   padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .row {
@@ -117,6 +121,7 @@ body {
   font-weight: 500;
   cursor: pointer;
   border: none;
+  transition: all 0.2s;
 }
 
 .seat.available {
@@ -126,11 +131,13 @@ body {
 
 .seat.available:hover {
   background-color: #16a34a;
+  transform: scale(1.05);
 }
 
 .seat.selected {
-  background-color: #3b82f6;
-  color: white;
+  background-color: #fbbf24;
+  color: black;
+  transform: scale(1.05);
 }
 
 .seat.booked {
@@ -140,11 +147,11 @@ body {
 }
 
 .controls {
-  width: 16rem;
   background: white;
   border-radius: 0.5rem;
-  padding: 1rem;
+  padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 300px;
 }
 
 .error {
