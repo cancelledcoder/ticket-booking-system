@@ -4,15 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run prisma:generate && next build",
+    "build": "npx tsc --noEmit && npm run prisma:generate && next build",
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "ts-node prisma/seed.ts",
     "db:setup": "npm run prisma:generate && npm run prisma:migrate && npm run prisma:seed",
-    "postinstall": "prisma generate && npm run build:types",
-    "build:types": "tsc --noEmit",
+    "postinstall": "prisma generate",
     "db:migrate:prod": "prisma migrate deploy",
     "db:seed:prod": "prisma db seed"
   },
