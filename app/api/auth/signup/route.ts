@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export async function POST(req: Request) {
   try {
@@ -34,6 +35,9 @@ export async function POST(req: Request) {
     // Check for existing user
     const existingUser = await prisma.user.findUnique({
       where: { email },
+    }).catch((error: Error) => {
+      console.error('Error checking existing user:', error);
+      throw error;
     });
 
     if (existingUser) {
@@ -53,6 +57,9 @@ export async function POST(req: Request) {
         password: hashedPassword,
         name,
       },
+    }).catch((error: Error) => {
+      console.error('Error creating user:', error);
+      throw error;
     });
 
     // Return success response
@@ -70,15 +77,30 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('Signup error:', error);
     
-    // Handle specific Prisma errors
-    if (error instanceof Error) {
-      if (error.message.includes('prisma')) {
-        console.error('Prisma error details:', error);
+    // Handle Prisma-specific errors
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.error('Prisma error code:', error.code);
+      console.error('Prisma error message:', error.message);
+      
+      if (error.code === 'P2002') {
         return NextResponse.json(
-          { error: 'Database error occurred. Please try again later.' },
-          { status: 500 }
+          { error: 'This email is already registered' },
+          { status: 400 }
         );
       }
+      
+      return NextResponse.json(
+        { error: 'Database error occurred. Please try again later.' },
+        { status: 500 }
+      );
+    }
+
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      console.error('Prisma initialization error:', error.message);
+      return NextResponse.json(
+        { error: 'Unable to connect to the database. Please try again later.' },
+        { status: 503 }
+      );
     }
 
     return NextResponse.json(
