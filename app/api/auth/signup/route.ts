@@ -5,7 +5,10 @@ import { Prisma } from '@prisma/client';
 
 export async function POST(req: Request) {
   try {
+    console.log('Starting signup process...');
+    
     const { email, password, name } = await req.json();
+    console.log('Received signup data for:', email);
 
     // Input validation
     if (!email || !password || !name) {
@@ -32,55 +35,91 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check for existing user
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    }).catch((error: Error) => {
-      console.error('Error checking existing user:', error);
-      throw error;
-    });
+    console.log('Checking for existing user...');
+    try {
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      }).catch((error: Error) => {
+        console.error('Error checking existing user:', error);
+        throw error;
+      });
+      console.log('Existing user check completed');
 
-    if (existingUser) {
+      if (existingUser) {
+        return NextResponse.json(
+          { error: 'User already exists' },
+          { status: 400 }
+        );
+      }
+    } catch (findError) {
+      console.error('Error during existing user check:', findError);
+      throw findError;
+    }
+
+    console.log('Hashing password...');
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    console.log('Creating new user...');
+    try {
+      const user = await prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          name,
+        },
+      }).catch((error: Error) => {
+        console.error('Error creating user:', error);
+        throw error;
+      });
+      console.log('User created successfully:', user.id);
+
+      // Return success response
       return NextResponse.json(
-        { error: 'User already exists' },
-        { status: 400 }
+        { 
+          message: 'User created successfully', 
+          user: { 
+            id: user.id, 
+            email: user.email, 
+            name: user.name 
+          } 
+        },
+        { status: 201 }
+      );
+    } catch (createError) {
+      console.error('Error during user creation:', {
+        error: createError,
+        errorMessage: (createError as Error).message,
+        errorStack: (createError as Error).stack,
+      });
+      throw createError;
+    }
+  } catch (error) {
+    console.error('Signup error details:', {
+      error,
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+      errorStack: error instanceof Error ? error.stack : undefined,
+      errorName: error instanceof Error ? error.name : 'Unknown',
+    });
+    
+    // Handle Prisma-specific errors
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      console.error('Database initialization error:', {
+        errorMessage: error.message,
+        errorCode: error.errorCode,
+        clientVersion: error.clientVersion,
+      });
+      return NextResponse.json(
+        { error: 'Database connection failed. Please try again later.' },
+        { status: 503 }
       );
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-      },
-    }).catch((error: Error) => {
-      console.error('Error creating user:', error);
-      throw error;
-    });
-
-    // Return success response
-    return NextResponse.json(
-      { 
-        message: 'User created successfully', 
-        user: { 
-          id: user.id, 
-          email: user.email, 
-          name: user.name 
-        } 
-      },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error('Signup error:', error);
-    
-    // Handle Prisma-specific errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      console.error('Prisma error code:', error.code);
-      console.error('Prisma error message:', error.message);
+      console.error('Known Prisma error:', {
+        code: error.code,
+        meta: error.meta,
+        message: error.message,
+      });
       
       if (error.code === 'P2002') {
         return NextResponse.json(
@@ -95,12 +134,8 @@ export async function POST(req: Request) {
       );
     }
 
-    if (error instanceof Prisma.PrismaClientInitializationError) {
-      console.error('Prisma initialization error:', error.message);
-      return NextResponse.json(
-        { error: 'Unable to connect to the database. Please try again later.' },
-        { status: 503 }
-      );
+    if (error instanceof Prisma.PrismaClientUnknownRequestError) {
+      console.error('Unknown Prisma error:', error.message);
     }
 
     return NextResponse.json(
