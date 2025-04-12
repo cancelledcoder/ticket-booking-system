@@ -8,13 +8,9 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:seed": "ts-node prisma/seed.ts",
-    "db:setup": "npm run prisma:generate && npm run prisma:migrate && npm run prisma:seed",
     "postinstall": "prisma generate",
     "db:migrate:prod": "prisma migrate deploy",
     "db:seed:prod": "prisma db seed"
@@ -25,6 +21,7 @@
     "jose": "^6.0.10",
     "jsonwebtoken": "^9.0.2",
     "next": "14.1.0",
+    "prisma": "^5.10.2",
     "react": "^18",
     "react-dom": "^18",
     "typescript": "^5.8.3",
@@ -37,7 +34,6 @@
   "devDependencies": {
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
-    "prisma": "^5.10.2",
     "ts-node": "^10.9.2"
   },
   "prisma": {

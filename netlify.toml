@@ -1,11 +1,11 @@
 [build]
-  command = "npm ci && npm run prisma:generate && npm run build"
+  command = "npm install && npm run build"
   publish = ".next"
 
 [build.environment]
   NEXT_USE_NETLIFY_EDGE = "true"
   NODE_ENV = "production"
-  NPM_FLAGS = "--no-optional"
+  NPM_CONFIG_PRODUCTION = "false"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
