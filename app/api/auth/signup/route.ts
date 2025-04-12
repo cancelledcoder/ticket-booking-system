@@ -1,49 +1,43 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { prisma } from '@/lib/prisma';
 
-const prisma = new PrismaClient();
-
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const { name, email, password } = await request.json();
+    const { email, password, name } = await req.json();
 
-    // Validate input
-    if (!name || !email || !password) {
+    if (!email || !password || !name) {
       return NextResponse.json(
-        { error: 'Name, email, and password are required' },
+        { error: 'All fields are required' },
         { status: 400 }
       );
     }
 
-    // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'User with this email already exists' },
+        { error: 'User already exists' },
         { status: 400 }
       );
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
     const user = await prisma.user.create({
       data: {
-        name,
         email,
         password: hashedPassword,
+        name,
       },
     });
 
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
-
-    return NextResponse.json(userWithoutPassword);
+    return NextResponse.json(
+      { message: 'User created successfully', user: { id: user.id, email: user.email, name: user.name } },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Signup error:', error);
     return NextResponse.json(

@@ -1,18 +1,16 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { prisma } from '@/lib/prisma';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 
-const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const { email, password } = await request.json();
+    const { email, password } = await req.json();
     console.log('Login attempt for email:', email);
 
-    // Validate input
     if (!email || !password) {
       console.log('Missing email or password');
       return NextResponse.json(
@@ -21,7 +19,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Find user
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -29,18 +26,17 @@ export async function POST(request: Request) {
     if (!user) {
       console.log('User not found:', email);
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { error: 'Invalid credentials' },
         { status: 401 }
       );
     }
 
-    // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    if (!isValidPassword) {
+    if (!isPasswordValid) {
       console.log('Invalid password for user:', email);
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { error: 'Invalid credentials' },
         { status: 401 }
       );
     }
@@ -73,7 +69,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'Failed to log in' },
+      { error: 'Failed to login' },
       { status: 500 }
     );
   }
