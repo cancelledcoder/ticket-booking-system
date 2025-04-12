@@ -1,11 +1,14 @@
 [build]
-  command = "npm install && npm run build"
+  command = "npm ci && npm run prisma:generate && npm run build"
   publish = ".next"
 
 [build.environment]
   NEXT_USE_NETLIFY_EDGE = "true"
-  NODE_VERSION = "18.17.0"
-  NPM_FLAGS = "--legacy-peer-deps"
+  NODE_ENV = "production"
+  NPM_FLAGS = "--no-optional"
 
 [[plugins]]
-  package = "@netlify/plugin-nextjs" 
+  package = "@netlify/plugin-nextjs"
+
+[[plugins.inputs]]
+  skipBuildCache = "true" 
