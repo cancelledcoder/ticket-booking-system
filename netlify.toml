@@ -10,5 +10,5 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-[[plugins.inputs]]
-  skipBuildCache = "true" 
+  [plugins.inputs]
+    skipBuildCache = true 
