@@ -8,7 +8,4 @@
   NPM_CONFIG_PRODUCTION = "false"
 
 [[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-  [plugins.inputs]
-    skipBuildCache = true 
+  package = "@netlify/plugin-nextjs" 
