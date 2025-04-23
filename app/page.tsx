@@ -159,7 +159,7 @@ export default function Home() {
       setSuccessMessage(`Successfully booked ${selectedSeats.length} seat${selectedSeats.length > 1 ? 's' : ''}`);
       setSelectedSeats([]);
       setNumberOfSeats('');
-      fetchSeats(); // Refresh seats
+      await fetchSeats(); // Refresh seats
       
       setTimeout(() => {
         setSuccessMessage('');
