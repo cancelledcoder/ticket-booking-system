@@ -37,4 +37,15 @@ export async function GET() {
       { status: 500 }
     );
   }
+}
+
+export async function resetSeats() {
+  try {
+    await prisma.seat.updateMany({
+      data: { available: true },
+    });
+    console.log('All seats have been reset to available.');
+  } catch (error) {
+    console.error('Error resetting seats:', error);
+  }
 } 
