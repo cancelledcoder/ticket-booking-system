@@ -42,7 +42,7 @@ export async function GET() {
 export async function resetSeats() {
   try {
     await prisma.seat.updateMany({
-      data: { available: true },
+      data: { isBooked: false },
     });
     console.log('All seats have been reset to available.');
   } catch (error) {
