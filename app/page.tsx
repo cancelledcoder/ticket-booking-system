@@ -235,6 +235,7 @@ export default function Home() {
                             ? 'selected' 
                             : 'available'
                       }`}
+                      style={{ cursor: seat.isBooked ? 'not-allowed' : 'pointer' }}
                     >
                       {seat.id}
                     </button>
