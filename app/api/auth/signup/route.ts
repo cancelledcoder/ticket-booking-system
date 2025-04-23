@@ -73,6 +73,11 @@ export async function POST(req: Request) {
       });
       console.log('User created successfully:', user.id);
 
+      // Reset seats to available when a user signs up
+      await prisma.seat.updateMany({
+        data: { isBooked: false },
+      });
+
       // Return success response
       return NextResponse.json(
         { 

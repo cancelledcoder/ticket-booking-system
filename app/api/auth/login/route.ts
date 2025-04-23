@@ -60,6 +60,11 @@ export async function POST(req: Request) {
       path: '/',
     });
 
+    // Reset seats to available when a user logs in
+    await prisma.seat.updateMany({
+      data: { isBooked: false },
+    });
+
     const response = NextResponse.json({
       success: true,
       user: userWithoutPassword,
