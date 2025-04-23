@@ -177,24 +177,15 @@ export default function Home() {
 
   const handleResetAllSeats = async () => {
     try {
-      const response = await fetch('/api/seats/reset', {
-        method: 'POST',
-      });
-
+      const response = await fetch('/api/seats/reset', { method: 'POST' });
       if (!response.ok) {
         throw new Error('Failed to reset seats');
       }
-
-      const data = await response.json();
-      setSeats(data.seats);
+      await fetchSeats(); // Refresh seat data after reset
       setSuccessMessage('All seats have been reset to available');
-      handleReset();
-
-      setTimeout(() => {
-        setSuccessMessage('');
-      }, 3000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to reset seats');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      setError('Failed to reset seats');
     }
   };
 
@@ -232,8 +223,8 @@ export default function Home() {
                         seat.isBooked 
                           ? 'booked' 
                           : selectedSeats.includes(seat.id) 
-                            ? 'selected' 
-                            : 'available'
+                          ? 'selected' 
+                          : 'available'
                       }`}
                       style={{ cursor: seat.isBooked ? 'not-allowed' : 'pointer' }}
                     >
